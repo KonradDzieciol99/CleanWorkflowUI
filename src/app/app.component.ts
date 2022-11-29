@@ -1,10 +1,29 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { environment } from 'src/environments/environment';
+import { AuthenticationModule } from './authentication/authentication.module';
+import { AuthenticationService } from './authentication/authentication.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
+  TOKEN:string=environment.LOCALSTORAGE_TOKEN_NAME;
   title = 'CleanWorkflowUI';
+  constructor( private accountService: AuthenticationService) {
+
+  }
+
+  ngOnInit(): void {
+    this.loadCurrentUser();
+  }
+  loadCurrentUser() {
+    const token = localStorage.getItem(this.TOKEN);
+    this.accountService.loadCurrentUser(token).subscribe(() => {
+      console.log('loaded user');
+    }, error => {
+      console.log(error);
+    })
+  }
 }

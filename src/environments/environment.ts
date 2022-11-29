@@ -3,6 +3,9 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
+
+  apiUrl: 'https://localhost:44346/api/',
+  LOCALSTORAGE_TOKEN_NAME:"WorkflowToken",
   production: false
 };
 
