@@ -19,6 +19,8 @@ export class LoginComponent implements OnInit {
   ngOnInit(): void {
   }
   onSubmit(form: FormGroup) {
+    this.loginForm.controls['username']?.errors?.['email']
+
     console.log('Valid?', form.valid); // true or false
     console.log('Name', form.value.name);
     console.log('Email', form.value.email);
