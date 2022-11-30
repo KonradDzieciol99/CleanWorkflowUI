@@ -1,1 +1,47 @@
-<p>login works!</p>
+
+  <div class="container text-center h-100 d-flex justify-content-center align-items-center"  >
+    <form class="form" [formGroup]="loginForm" (ngSubmit)="onSubmit(loginForm)" style="width:330px; ">
+        <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
+
+        <!-- <div class="form-floating">
+          <input type="email" class="form-control" id="floatingInput" placeholder="name@example.com">
+          <label for="floatingInput">Email address</label>
+        </div>
+        <div class="form-floating">
+          <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
+          <label for="floatingPassword">Password</label>
+        </div> -->
+        <app-input-custom
+        [formGroup]="loginForm"
+        [nameFormControl]="'email'"
+        [validatorsKeyValue]="[{key: 'required', value: 'Field is required.'},
+                              {key: 'email', value: 'email format required.'}]"
+        [readonly]="false"
+        [label]="'Email Addres'"
+        [type]="'email'"
+        > 
+        </app-input-custom>
+        <app-input-custom
+
+        [formGroup]="loginForm"
+        [nameFormControl]="'password'"
+        [validatorsKeyValue]="[ {key: 'required', value: 'Field is required.'},
+                                {key: 'minlength', value: 'Minimum password length is 6.'}]"
+        [readonly]="false"
+        [label]="'Password'"
+        [type]="'password'"
+        >
+        </app-input-custom>
+
+        <!-- minLength         class="p-2" -->
+
+        <button class="w-100 btn btn-lg btn-primary" type="submit">Sign in</button>
+        <p class="mt-5 mb-3 text-muted">
+          &copy; 
+          <a href="https://www.linkedin.com/in/konrad-dzięcioł-235a8523a" class="link-primary"><fa-icon [icon]="faLinkedin"></fa-icon></a>
+        </p>
+    </form>
+</div>
+
+
+
