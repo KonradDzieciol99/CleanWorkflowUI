@@ -9,10 +9,12 @@
         [class.is-invalid]="formGroup.get(nameFormControl)?.invalid && (formGroup.get(nameFormControl)?.dirty || formGroup.get(nameFormControl)?.touched) && !readonly" />
         <label for="floatingInput">{{label}}</label>
 
-    <!-- <div *ngFor="let item of validatorsKeyValue" class="invalid-feedback">
+    <!-- <div *ngFor="let item of validatorsKeyValue" class="invalid-feedback fghfgh">
         <span *ngIf="formGroup.get(nameFormControl)?.hasError(item.key) && !readonly">{{item.value}}</span>
     </div>
- -->
+
+    -->
+
     <ng-container *ngIf="(formGroup.get(nameFormControl)?.dirty || formGroup.get(nameFormControl)?.touched) && this.formGroup.get(this.nameFormControl)?.errors as errors "> 
         <div *ngFor="let item of errors|mapErrors:validatorsKeyValue" class="invalid-feedback m-2">
             {{item}}
