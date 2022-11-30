@@ -1,30 +1,39 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { FormGroup } from '@angular/forms';
 import { faLinkedin } from '@fortawesome/free-brands-svg-icons';
+import { ToastrService } from 'ngx-toastr';
+import { IRegisterUser } from 'src/app/shared/models/IRegisterUser';
+import { AuthenticationService } from '../authentication.service';
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.css']
+  styleUrls: ['./login.component.css'],
 })
 export class LoginComponent implements OnInit {
   faLinkedin = faLinkedin
   loginForm: FormGroup = new FormGroup({
-    email: new FormControl('',[Validators.required, Validators.email,Validators.minLength(6)]),
-    password: new FormControl('',[Validators.required,Validators.minLength(6)]),
+    email: new FormControl<string>('',[Validators.required, Validators.email,Validators.minLength(6)]),
+    password: new FormControl<string>('',[Validators.required,Validators.minLength(6)]),
   });
 
-  constructor() { }
+  constructor(private authenticationService:AuthenticationService,private toastrService: ToastrService) { }
 
   ngOnInit(): void {
   }
   onSubmit(form: FormGroup) {
-    this.loginForm.controls['username']?.errors?.['email']
+    if (this.loginForm.invalid) {
+      this.loginForm.markAllAsTouched()
+      return;
+    }
+    let registerUser:IRegisterUser={
+      email: this.loginForm.get("email")?.value,
+      password: this.loginForm.get("password")?.value
+    }
 
-    console.log('Valid?', form.valid); // true or false
-    console.log('Name', form.value.name);
-    console.log('Email', form.value.email);
-    console.log('Message', form.value.message);
+    this.authenticationService.register(registerUser).subscribe(() => {
+        this.toastrService.success("Rejestracja przebiegła pomyslnie");
+    });
   }
 
 }

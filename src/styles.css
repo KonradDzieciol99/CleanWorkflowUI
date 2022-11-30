@@ -2,3 +2,19 @@
 html, body{
     height: 100%; 
 }
+
+/* #outboxmidpg #buttons input[id="Cancel"], */
+#loginForm input[type="password"] {
+    margin-bottom: 10px;
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+} 
+#loginForm .form-floating:focus-within {
+    z-index: 2;
+}
+  
+#loginForm input[type="email"] {
+    margin-bottom: -1px;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
+}

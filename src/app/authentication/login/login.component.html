@@ -1,9 +1,10 @@
 
   <div class="container text-center h-100 d-flex justify-content-center align-items-center"  >
-    <form class="form" [formGroup]="loginForm" (ngSubmit)="onSubmit(loginForm)" style="width:330px; ">
+    <form id="loginForm" class="form" [formGroup]="loginForm" (ngSubmit)="onSubmit(loginForm)" style="width:330px; ">
         <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
           <div>
             <app-input-custom
+            class="form"
             [formGroup]="loginForm"
             [nameFormControl]="'email'"
             [validatorsKeyValue]="[{key: 'required', value: 'Field is required.'},
@@ -15,7 +16,6 @@
             > 
             </app-input-custom>
             <app-input-custom
-            
             [formGroup]="loginForm"
             [nameFormControl]="'password'"
             [validatorsKeyValue]="[ {key: 'required', value: 'Field is required.'},

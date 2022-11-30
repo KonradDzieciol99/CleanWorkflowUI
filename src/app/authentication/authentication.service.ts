@@ -3,6 +3,7 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, map, Observable, of, tap } from 'rxjs';
 import { environment } from 'src/environments/environment';
+import { IRegisterUser } from '../shared/models/IRegisterUser';
 import { IUser } from '../shared/models/IUser';
 
 @Injectable({
@@ -47,8 +48,8 @@ export class AuthenticationService {
     )
   }
 
-  register(values: any):Observable<void> {
-    return this.http.post<IUser>(this.baseUrl + 'account/register', values).pipe(
+  register(registerUser: IRegisterUser):Observable<void> {
+    return this.http.post<IUser>(this.baseUrl + 'account/register', registerUser).pipe(
       map((user: IUser) => {
         if (user) {
           localStorage.setItem(this.TOKEN, user.token);

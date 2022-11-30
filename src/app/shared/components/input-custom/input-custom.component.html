@@ -8,11 +8,6 @@
         [class.is-valid]="formGroup.get(nameFormControl)?.valid && (formGroup.get(nameFormControl)?.dirty || formGroup.get(nameFormControl)?.touched) && !readonly"
         [class.is-invalid]="formGroup.get(nameFormControl)?.invalid && (formGroup.get(nameFormControl)?.dirty || formGroup.get(nameFormControl)?.touched) && !readonly" />
         <label [for]="nameFormControl">{{label}}</label>
-    <!-- <ng-container *ngIf="(formGroup.get(nameFormControl)?.dirty || formGroup.get(nameFormControl)?.touched) && this.formGroup.get(this.nameFormControl)?.errors as errors "> 
-        <div *ngFor="let item of errors|mapErrors:validatorsKeyValue" class="invalid-feedback m-2">
-            {{item}}
-        </div>
-    </ng-container> -->
     <ng-container *ngIf="formGroup.get(nameFormControl)?.invalid &&(formGroup.get(nameFormControl)?.dirty || formGroup.get(nameFormControl)?.touched) "> 
         <div *ngFor="let validator of validatorsKeyValue" class="invalid-feedback m-2">
             <span *ngIf="formGroup.controls[nameFormControl]?.errors?.[validator.key]">
