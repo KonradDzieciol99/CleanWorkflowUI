@@ -9,9 +9,8 @@ import { faLinkedin } from '@fortawesome/free-brands-svg-icons';
 })
 export class LoginComponent implements OnInit {
   faLinkedin = faLinkedin
-  teststring=['sdfas','hhhh']
   loginForm: FormGroup = new FormGroup({
-    email: new FormControl('',[Validators.required, Validators.email]),
+    email: new FormControl('',[Validators.required, Validators.email,Validators.minLength(6)]),
     password: new FormControl('',[Validators.required,Validators.minLength(6)]),
   });
 

@@ -21,30 +21,8 @@ export class InputCustomComponent implements OnInit {
    }
 
   ngOnInit(): void {
-    this.formGroup.get(this.nameFormControl)?.valueChanges.subscribe(x=>{
-      // console.log(this.formGroup.get(this.nameFormControl)?.errors);
-      // let sdfgds=this.formGroup.get(this.nameFormControl)?.errors
-      // if(sdfgds){
-      //   console.log(Object.keys(sdfgds))
-      //   this.errorsList=Object.keys(sdfgds);
-      //   //this.errorsList
-      //   for(let item of this.errorsList)
-      //   {
-      //     let c = this.validatorsKeyValue.find(x=>x.key == item)?.value
-      //     if( c)    
-      //     {
-      //       this.errorsList2.push(c)
-      //     }
-      //   }
-      // }
-      
+    this.formGroup.get(this.nameFormControl)?.valueChanges.subscribe(x=>{  
     })
-  }
-  testf(object:object):string[]{
-
-    console.log("testtttt")
-
-    return Object.keys(object)
   }
 
 }

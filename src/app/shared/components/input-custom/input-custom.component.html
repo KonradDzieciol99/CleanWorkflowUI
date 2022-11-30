@@ -8,31 +8,9 @@
         [class.is-valid]="formGroup.get(nameFormControl)?.valid && (formGroup.get(nameFormControl)?.dirty || formGroup.get(nameFormControl)?.touched) && !readonly"
         [class.is-invalid]="formGroup.get(nameFormControl)?.invalid && (formGroup.get(nameFormControl)?.dirty || formGroup.get(nameFormControl)?.touched) && !readonly" />
         <label for="floatingInput">{{label}}</label>
-
-    <!-- <div *ngFor="let item of validatorsKeyValue" class="invalid-feedback fghfgh">
-        <span *ngIf="formGroup.get(nameFormControl)?.hasError(item.key) && !readonly">{{item.value}}</span>
-    </div>
-
-    -->
-
     <ng-container *ngIf="(formGroup.get(nameFormControl)?.dirty || formGroup.get(nameFormControl)?.touched) && this.formGroup.get(this.nameFormControl)?.errors as errors "> 
         <div *ngFor="let item of errors|mapErrors:validatorsKeyValue" class="invalid-feedback m-2">
             {{item}}
         </div>
     </ng-container>
-        <!-- <div *ngFor="let item of Object.keys(errors)" class="invalid-feedback">
-            <span *ngIf="formGroup.get(nameFormControl)?.hasError(item.key) && !readonly">{{item.value}}</span> 
-        </div>  -->
-
-    <!-- <div *ngFor="let item of errorsList2" class="invalid-feedback">
-        {{item}}
-    </div> -->
-    
-        <!-- {{this.validatorsKeyValue.find(x=>x.key == item)?.value}} -->
-
 </div>
-<!-- {{formGroup.get(nameFormControl)|json}} -->
-<!-- <div class="form-floating">
-    <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
-    <label for="floatingPassword">Password</label>
-  </div> -->
