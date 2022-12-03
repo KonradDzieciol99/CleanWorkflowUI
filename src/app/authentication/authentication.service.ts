@@ -31,6 +31,9 @@ export class AuthenticationService {
 
    }
 
+  tryRefreshTokens(){
+    
+  }
   loadCurrentUser(token: string|null|undefined):Observable<void> {
     if (!token) {
       this.currentUserSource.next(undefined);
@@ -84,17 +87,8 @@ export class AuthenticationService {
     this.currentUserSource.next(undefined);
     this.router.navigateByUrl('/');
   }
-  toastButtons: IToastButton[] = [
-    {
-      id: "1",
-      title: "view jobs 1"
-    },
-    {
-      id: "2",
-      title: "view jobs 2"
-    }
-  ];
-  test(miliseconds:number):void{
+
+  private test(miliseconds:number):void{
     let seconds = Math.floor(miliseconds/1000) ;
     if (this.tokenExpTimer$) {
         interval(1000).pipe(takeUntil(this.tokenExpTimer$)).subscribe(x=>{
@@ -112,4 +106,6 @@ export class AuthenticationService {
       })
     }
   }
+
+
 }
