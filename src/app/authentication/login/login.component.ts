@@ -1,8 +1,10 @@
 import { Component, OnInit, ViewEncapsulation } from '@angular/core';
 import { FormControl, Validators } from '@angular/forms';
 import { FormGroup } from '@angular/forms';
+import { Router } from '@angular/router';
 import { faLinkedin } from '@fortawesome/free-brands-svg-icons';
 import { ToastrService } from 'ngx-toastr';
+import { ILoginUser } from 'src/app/shared/models/ILoginUser';
 import { IRegisterUser } from 'src/app/shared/models/IRegisterUser';
 import { AuthenticationService } from '../authentication.service';
 @Component({
@@ -17,7 +19,7 @@ export class LoginComponent implements OnInit {
     password: new FormControl<string>('',[Validators.required,Validators.minLength(6)]),
   });
 
-  constructor(private authenticationService:AuthenticationService,private toastrService: ToastrService) { }
+  constructor(private authenticationService:AuthenticationService,private toastrService: ToastrService,private router: Router) { }
 
   ngOnInit(): void {
   }
@@ -26,13 +28,14 @@ export class LoginComponent implements OnInit {
       this.loginForm.markAllAsTouched()
       return;
     }
-    let registerUser:IRegisterUser={
+    let loginUser:ILoginUser={
       email: this.loginForm.get("email")?.value,
       password: this.loginForm.get("password")?.value
     }
 
-    this.authenticationService.register(registerUser).subscribe(() => {
-        this.toastrService.success("Rejestracja przebiegła pomyslnie");
+    this.authenticationService.login(loginUser).subscribe(() => {
+        this.toastrService.success("Zalogowano");
+        this.router.navigateByUrl('../home');
     });
   }
 
