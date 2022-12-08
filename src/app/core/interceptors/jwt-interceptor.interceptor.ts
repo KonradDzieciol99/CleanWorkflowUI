@@ -5,29 +5,31 @@ import {
   HttpEvent,
   HttpInterceptor
 } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { map, mergeMap, Observable, of } from 'rxjs';
 import { IUser } from 'src/app/shared/models/IUser';
+import { AuthenticationService } from 'src/app/authentication/authentication.service';
 
 @Injectable()
 export class JwtInterceptorInterceptor implements HttpInterceptor {
 
-  constructor() {}
+  constructor(private authenticationService:AuthenticationService) {}
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
-    var userJSON = localStorage.getItem('CleanworkFlowUser');
-    let user:IUser|undefined;
-    if (userJSON) {
-      user = JSON.parse(userJSON)
-    }
 
-    if (user) {
-      request = request.clone({
-        setHeaders: {
-          Authorization: `Bearer ${user.token}`
+    return this.authenticationService.currentUser$.pipe(
+      mergeMap(user=>{
+
+        if (user) {
+          request = request.clone({
+            setHeaders: {
+              Authorization: `Bearer ${user.token}`
+            }
+          })
         }
-      })
-    }
 
-    return next.handle(request);
+        return next.handle(request)
+      })
+    );
+    //return next.handle(request);
   }
 }

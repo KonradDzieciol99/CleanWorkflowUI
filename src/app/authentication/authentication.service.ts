@@ -54,7 +54,7 @@ export class AuthenticationService {
   }
 
   login(values: any):Observable<void> {
-    return this.http.post<IUser>(this.baseUrl + 'account/login', values).pipe(
+    return this.http.post<IUser>(this.baseUrl + 'account/login', values,{ withCredentials: true }).pipe(
       map((user: IUser) => {
         if (user) {
           localStorage.setItem(this.TOKEN, user.token);
@@ -95,7 +95,7 @@ export class AuthenticationService {
 
         let toast = this.toastrService.info(`sesja zakończy się za ${seconds-x} sekund`,undefined,{})
         
-        toast.onTap.subscribe(()=>{
+        toast.onTap.pipe(take(1)).subscribe(()=>{
           this.toastrService.info("przedłużanie")
         })
 

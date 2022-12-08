@@ -8,11 +8,12 @@ import {
 } from '@angular/common/http';
 import { catchError, Observable, throwError } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
+import { CookieService } from 'ngx-cookie-service';
 
 @Injectable()
 export class ErrorHandlingInterceptor implements HttpInterceptor {
 
-  constructor(private toastrService: ToastrService) {}
+  constructor(private toastrService: ToastrService,private cookieService: CookieService) {}
 
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     return next.handle(request).pipe(
@@ -24,6 +25,7 @@ export class ErrorHandlingInterceptor implements HttpInterceptor {
             this.toastrService.error(httpErrorResponse.error?.Message)
           }
           if (httpErrorResponse.status === 401) {
+            //document.cookie
             this.toastrService.error(httpErrorResponse.error?.Message)
           }
           if (httpErrorResponse.status === 404) {
