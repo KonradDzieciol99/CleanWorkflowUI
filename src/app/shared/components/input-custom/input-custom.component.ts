@@ -4,7 +4,7 @@ import { FormGroup } from '@angular/forms';
 @Component({
   selector: 'app-input-custom',
   templateUrl: './input-custom.component.html',
-  styleUrls: ['./input-custom.component.css']
+  styleUrls: ['./input-custom.component.scss']
 })
 export class InputCustomComponent implements OnInit {
 

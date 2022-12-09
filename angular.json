@@ -5,7 +5,11 @@
   "projects": {
     "CleanWorkflowUI": {
       "projectType": "application",
-      "schematics": {},
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
       "root": "",
       "sourceRoot": "src",
       "prefix": "app",
@@ -23,11 +27,7 @@
               "src/assets"
             ],
             "styles": [
-              "./node_modules/ngx-bootstrap/datepicker/bs-datepicker.css",
-              "./node_modules/bootstrap/dist/css/bootstrap.min.css",
-              "node_modules/ngx-spinner/animations/ball-clip-rotate-multiple.css",
-              "node_modules/ngx-toastr/toastr.css",
-              "src/styles.css"         
+              "src/styles.scss"         
             ],
             "scripts": []
           },
@@ -94,7 +94,7 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.css"
+              "src/styles.scss"
             ],
             "scripts": []
           }
