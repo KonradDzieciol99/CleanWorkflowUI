@@ -12,9 +12,5 @@ export class HomeComponent implements OnInit {
 
   ngOnInit(): void {
   }
-  test(){
-    this.homeService.testGet().subscribe(x=>{
-      console.log(x);
-    })
-  }
+
 }

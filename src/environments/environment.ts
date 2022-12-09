@@ -5,7 +5,7 @@
 export const environment = {
 
   apiUrl: 'https://localhost:44346/api/',
-  LOCALSTORAGE_TOKEN_NAME:"WorkflowToken",
+  COOKIE_REFRESH_TOKEN_NAME:"Workflow-Refresh-Token",
   production: false
 };
 

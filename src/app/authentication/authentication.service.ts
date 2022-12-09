@@ -1,12 +1,13 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, interval, map, Observable, of, take, takeUntil, tap, timer } from 'rxjs';
+import { BehaviorSubject, interval, map, Observable, of, take, takeUntil, tap, throwError, timer } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { IRegisterUser } from '../shared/models/IRegisterUser';
 import { IUser } from '../shared/models/IUser';
 import { IToken } from '../shared/models/IToken';
 import { ToastrService } from 'ngx-toastr';
+import { CookieService } from 'ngx-cookie-service';
 
 export interface IToastButton {
   id: string;
@@ -19,7 +20,7 @@ export interface IToastButton {
 
 export class AuthenticationService {
 
-  private TOKEN:string=environment.LOCALSTORAGE_TOKEN_NAME;
+  
   private baseUrl = environment.apiUrl;
   private currentUserSource = new BehaviorSubject<IUser|undefined>(undefined);
   currentUser$ = this.currentUserSource.asObservable();
@@ -27,45 +28,36 @@ export class AuthenticationService {
 
   private tokenExpTimer$:Observable<0>|undefined;
 
-  constructor(private http: HttpClient, private router: Router,private toastrService:ToastrService) {
+  constructor(private http: HttpClient, private router: Router,private toastrService:ToastrService,private cookieService: CookieService) {
 
    }
 
   tryRefreshTokens(){
     
   }
-  loadCurrentUser(token: string|null|undefined):Observable<void> {
-    if (!token) {
-      this.currentUserSource.next(undefined);
-      return of();
+  loadCurrentUser() {
+    const cookieExists: boolean = this.cookieService.check(environment.COOKIE_REFRESH_TOKEN_NAME);
+    if(cookieExists){
+      return this.http.post<IUser>(this.baseUrl + 'account/refresh-token',{}).pipe(
+        map((user: IUser) => {
+          if (user) {
+            this.currentUserSource.next(user);
+          }
+        })
+      )
     }
-
-    let headers = new HttpHeaders();
-    headers = headers.set('Authorization', `Bearer ${token}`);
-
-    return this.http.get<IUser>(this.baseUrl + 'account', {headers}).pipe(
-      map((user: IUser) => {
-        if (user) {
-          localStorage.setItem(this.TOKEN, user.token);
-          this.currentUserSource.next(user);
-        }
-      })
-    )
+    return throwError(() => new Error(`Empty cookie`));
   }
 
   login(values: any):Observable<void> {
     return this.http.post<IUser>(this.baseUrl + 'account/login', values,{ withCredentials: true }).pipe(
       map((user: IUser) => {
         if (user) {
-          localStorage.setItem(this.TOKEN, user.token);
           this.currentUserSource.next(user);
           let exprationTimeInSeconds=(JSON.parse(window.atob(user.token.split('.')[1])) as IToken).exp
-
           let dif = exprationTimeInSeconds * 1000-new Date().valueOf();
-
           this.tokenExpTimer$ = timer(dif);
           this.test(dif);
-
         }
       })
     )
@@ -75,7 +67,6 @@ export class AuthenticationService {
     return this.http.post<IUser>(this.baseUrl + 'account/register', registerUser).pipe(
       map((user: IUser) => {
         if (user) {
-          localStorage.setItem(this.TOKEN, user.token);
           this.currentUserSource.next(user);
         }
       })
@@ -83,9 +74,9 @@ export class AuthenticationService {
   }
 
   logout() {
-    localStorage.removeItem(this.TOKEN);
+    this.cookieService.delete(environment.COOKIE_REFRESH_TOKEN_NAME);
     this.currentUserSource.next(undefined);
-    this.router.navigateByUrl('/');
+    this.router.navigateByUrl('../');
   }
 
   private test(miliseconds:number):void{

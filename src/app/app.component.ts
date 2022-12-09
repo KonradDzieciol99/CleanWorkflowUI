@@ -12,20 +12,16 @@ import { faCoffee } from '@fortawesome/free-solid-svg-icons';
 export class AppComponent implements OnInit {
   faCoffee = faCoffee;
 
-  TOKEN:string=environment.LOCALSTORAGE_TOKEN_NAME;
+  //TOKEN:string=environment.LOCALSTORAGE_TOKEN_NAME;
   title = 'CleanWorkflowUI';
   constructor( private accountService: AuthenticationService) {
 
   }
 
   ngOnInit(): void {
-    this.loadCurrentUser();
+    //this.loadCurrentUser();
   }
   loadCurrentUser() {
-    this.accountService.loadCurrentUser(token).subscribe(() => {
-      console.log('loaded user');
-    }, error => {
-      console.log(error);
-    })
+    //this.accountService.loadCurrentUser();
   }
 }

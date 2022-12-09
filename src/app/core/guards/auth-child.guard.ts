@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivateChild, Router, RouterStateSnapshot, UrlTree } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { map, Observable } from 'rxjs';
+import { catchError, map, mergeMap, Observable, of } from 'rxjs';
 import { AuthenticationService } from 'src/app/authentication/authentication.service';
 import { IUser } from 'src/app/shared/models/IUser';
 
@@ -19,16 +19,20 @@ export class AuthChildGuard implements CanActivateChild {
     childRoute: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
       return this.authenticationService.currentUser$.pipe(
-        map((auth:IUser|undefined) => {
+        mergeMap(auth=> {
           if (auth) {
-            return true;
+            return of(true)
           }
-
-          
-
-          this.toastrService.error("Unauthorized");
-          this.router.navigate(['../auth/login']);
-          return false;
+         
+          return this.authenticationService.loadCurrentUser().pipe(
+            map(()=>{
+              return true;
+            }),
+            catchError(() =>{
+              this.router.navigate(['../auth/login'])
+              return of(false);
+            })
+            )
         })
       )
   }
