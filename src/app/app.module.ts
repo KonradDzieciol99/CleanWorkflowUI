@@ -10,12 +10,10 @@ import { CoreModule } from './core/core.module';
 import { NgxSpinnerModule } from 'ngx-spinner';
 import { LoadingInterceptor } from './core/interceptors/loading.interceptor';
 import {CookieService} from 'ngx-cookie-service';
-import { TestComponent } from './test/test.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    TestComponent
   ],
   imports: [
     BrowserAnimationsModule,
