@@ -27,7 +27,22 @@
               "src/assets"
             ],
             "styles": [
-              "src/styles.scss"         
+              "src/styles.scss",            
+              {
+                "input": "src/themes/light.scss",
+                "bundleName": "light",
+                "inject": false
+              },
+              {
+                "input": "src/themes/dark.scss",
+                "bundleName": "dark",
+                "inject": false
+              },
+              {
+                "input": "src/themes/test.css",
+                "bundleName": "test",
+                "inject": false
+              }     
             ],
             "scripts": []
           },
