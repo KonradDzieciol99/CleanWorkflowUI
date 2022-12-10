@@ -19,6 +19,11 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    console.log(window.matchMedia('(prefers-color-scheme: dark)'));
+    console.log(window.matchMedia('(prefers-color-scheme: light)'));
+    if (window.matchMedia('(prefers-color-scheme)').media !== 'not all') {
+      console.log('🎉 Dark mode is supported');
+    }
     //this.loadCurrentUser();
   }
   loadCurrentUser() {

@@ -37,12 +37,7 @@
                 "input": "src/themes/dark.scss",
                 "bundleName": "dark",
                 "inject": false
-              },
-              {
-                "input": "src/themes/test.css",
-                "bundleName": "test",
-                "inject": false
-              }     
+              }  
             ],
             "scripts": []
           },

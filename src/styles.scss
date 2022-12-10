@@ -1,15 +1,32 @@
 /* You can add global styles to this file, and also import other style files */
 @import "../node_modules/ngx-bootstrap/datepicker/bs-datepicker.css";
-@import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
+// @import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
 @import "../node_modules/ngx-spinner/animations/ball-clip-rotate-multiple.css";
 @import "../node_modules/ngx-toastr/toastr.css";
 
 
+
+// @media (prefers-color-scheme: dark) {
+//     --body-bg: #000;
+//     --body-color: #fff;
+// }
+// @media (prefers-color-scheme: dark) {
+//     // body {
+//     //     background-color: var(--bs-dark);
+//     //     color: var(--bs-light);
+//     // }
+//     @import "../src/themes/dark.scss";
+// }
+// @include prefers-color-scheme($color-scheme-alt){
+//     @import "../src/themes/dark.scss";
+// }
 // $primary: #000;
 // $body-color: #111;
 
 // Bootstrap and its default variables
 //@import "../node_modules/bootstrap/scss/bootstrap";
+
+
 
 html, body{
     height: 100%; 

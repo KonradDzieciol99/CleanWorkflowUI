@@ -9,7 +9,7 @@ import { ThemeService } from '../../services/theme.service';
 })
 export class NavBarComponent implements OnInit {
 
-  constructor(private homeService:HomeService,private theme: ThemeService) { }
+  constructor(private homeService:HomeService,private themeService: ThemeService) { }
 
   ngOnInit(): void {
     
@@ -20,11 +20,14 @@ export class NavBarComponent implements OnInit {
     })
   }
   public switchTheme(): void {
-    if (this.theme.current === 'light') {
-        this.theme.current = 'dark';
+    if (this.themeService.current === 'light') {
+        this.themeService.setCurrent('dark');
     } else {
-        this.theme.current = 'light';
+      this.themeService.setCurrent('light');
     }
+  }
+  public destory(){
+    this.themeService.testdestroy();
   }
 
 }
