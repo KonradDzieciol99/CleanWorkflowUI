@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, interval, map, Observable, of, take, takeUntil, tap, throwError, timer } from 'rxjs';
+import { BehaviorSubject, interval, map, Observable, of, pipe, take, takeUntil, tap, throwError, timer } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { IRegisterUser } from '../shared/models/IRegisterUser';
 import { IUser } from '../shared/models/IUser';
@@ -29,8 +29,12 @@ export class AuthenticationService {
   private tokenExpTimer$:Observable<0>|undefined;
 
   constructor(private http: HttpClient, private router: Router,private toastrService:ToastrService,private cookieService: CookieService) {
-
-   }
+    console.log("ghjfgh");
+    this.currentUser$ ?? console.log("lolllllll")
+    interval(1000).pipe(takeUntil(this.currentUser$.pipe(take(1)))).subscribe(x=>{
+      console.log("ghjfgh");
+    })
+  }
 
   tryRefreshTokens(){
     
@@ -77,26 +81,34 @@ export class AuthenticationService {
     this.cookieService.delete(environment.COOKIE_REFRESH_TOKEN_NAME);
     this.currentUserSource.next(undefined);
     this.router.navigateByUrl('/auth');
-    this.toastrService.success("logged out successfully")
+    this.toastrService.success("logged out successfully");
+    
   }
 
   private test(miliseconds:number):void{
     let seconds = Math.floor(miliseconds/1000) ;
-    if (this.tokenExpTimer$) {
-        interval(1000).pipe(takeUntil(this.tokenExpTimer$)).subscribe(x=>{
+    if (!this.tokenExpTimer$) {return;}
 
-        let toast = this.toastrService.info(`sesja zakończy się za ${seconds-x} sekund`,undefined,{})
-        
-        toast.onTap.pipe(take(1)).subscribe(()=>{
-          this.toastrService.info("przedłużanie")
-        })
+    interval(1000).pipe(takeUntil(this.currentUser$)).subscribe(x=>{
 
-      })
+      let activeToast = this.toastrService.info(`sesja zakończy się za ${seconds-x} sekund`,undefined,{});
+            
+      let activeToastRenewSub = activeToast.onTap.pipe(take(1)).subscribe(()=>{
+        this.toastrService.info("przedłużanie")
+      });
 
-      this.tokenExpTimer$.pipe(take(1)).subscribe(()=>{
-        this.toastrService.info("sesja się zakończyła")
-      })
-    }
+      activeToast.toastRef.afterClosed().pipe(take(1)).subscribe(()=> {
+        activeToastRenewSub.unsubscribe();
+        console.log("odsubuje?");
+      });
+
+    });
+    
+    this.tokenExpTimer$.pipe(take(1)).subscribe(()=>{
+      this.toastrService.info("sesja się zakończyła")
+      this.logout();
+    })
+
   }
 
 
