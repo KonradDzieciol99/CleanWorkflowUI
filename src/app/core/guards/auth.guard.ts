@@ -41,6 +41,7 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
           }),
           catchError(() =>{
             this.router.navigate(['../auth/login'])
+            this.toastrService.warning('not authorized')
             return of(false);
           })
           )

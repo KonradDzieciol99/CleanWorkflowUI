@@ -1,6 +1,5 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { AuthLoadModuleGuard } from './core/guards/auth-load-module.guard';
 import { AuthGuard } from './core/guards/auth.guard';
 import { HeaderComponent } from './core/header/header.component';
 import { TestComponent } from './test/test/test.component';
@@ -13,7 +12,7 @@ const routes: Routes =
     data: { showHeader: false, showSidebar: false,showFooter: false },
   },
   {
-    canLoad: [AuthLoadModuleGuard],
+    canLoad: [AuthGuard],
     canActivate: [AuthGuard],
     path: 'home', 
     loadChildren: () => import("./home/home.module").then(mod=>mod.HomeModule)

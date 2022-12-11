@@ -1,13 +1,13 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { AuthChildGuard } from '../core/guards/auth-child.guard';
+import { AuthGuard } from '../core/guards/auth.guard';
 import { HomeComponent } from './home.component';
 
 const routes: Routes = [
 
   {
     path: '',
-    canActivateChild:[AuthChildGuard],
+    canActivateChild:[AuthGuard],
     children: [
       { path: '', component: HomeComponent },
 
