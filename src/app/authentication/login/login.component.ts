@@ -44,7 +44,7 @@ export class LoginComponent implements OnInit {
     }
     this.authenticationService.login(loginUser).pipe(take(1)).subscribe(() => {
         this.toastrService.success("Zalogowano");
-        this.router.navigateByUrl('../home');
+        this.router.navigateByUrl('/home');
     });
   }
 

@@ -3,6 +3,7 @@ import { environment } from 'src/environments/environment';
 import { AuthenticationModule } from './authentication/authentication.module';
 import { AuthenticationService } from './authentication/authentication.service';
 import { faCoffee } from '@fortawesome/free-solid-svg-icons';
+import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -11,22 +12,32 @@ import { faCoffee } from '@fortawesome/free-solid-svg-icons';
 })
 export class AppComponent implements OnInit {
   faCoffee = faCoffee;
-
-  //TOKEN:string=environment.LOCALSTORAGE_TOKEN_NAME;
+  showHeader = false;
+  showSidebar = false;
+  showFooter = false;
   title = 'CleanWorkflowUI';
-  constructor( private accountService: AuthenticationService) {
+  constructor(private router: Router,private activatedRoute: ActivatedRoute ) {
 
   }
 
   ngOnInit(): void {
-    console.log(window.matchMedia('(prefers-color-scheme: dark)'));
-    console.log(window.matchMedia('(prefers-color-scheme: light)'));
-    if (window.matchMedia('(prefers-color-scheme)').media !== 'not all') {
-      console.log('🎉 Dark mode is supported');
-    }
-    //this.loadCurrentUser();
+    this.router.events.subscribe(event => {
+      if (event instanceof NavigationEnd) {
+        this.showHeader = this.activatedRoute.firstChild?.snapshot.data['showHeader']!== false ? this.showHeader=true:this.showHeader=false;
+        this.showSidebar = this.activatedRoute.firstChild?.snapshot.data['showSidebar']!== false ? this.showSidebar=true:this.showSidebar=false;
+        this.showFooter = this.activatedRoute.firstChild?.snapshot.data['showFooter']!== false ? this.showFooter=true:this.showFooter=false;
+      }
+    });
   }
   loadCurrentUser() {
     //this.accountService.loadCurrentUser();
   }
 }
+
+
+// console.log(window.matchMedia('(prefers-color-scheme: dark)'));
+// console.log(window.matchMedia('(prefers-color-scheme: light)'));
+// if (window.matchMedia('(prefers-color-scheme)').media !== 'not all') {
+//   console.log('🎉 Dark mode is supported');
+// }
+//this.loadCurrentUser();

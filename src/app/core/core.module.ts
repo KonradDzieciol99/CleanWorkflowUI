@@ -21,7 +21,7 @@ import { RouterModule } from '@angular/router';
     CommonModule,
     RouterModule
   ]
-  ,exports: [],// nie trzeba importować HeaderComponent bo w żadnym elementcie appcomponent nie uzywamy tego w "kodzie" tylko jawnie jako komponent
+  ,exports: [HeaderComponent],// nie trzeba importować HeaderComponent bo w żadnym elementcie appcomponent nie uzywamy tego w "kodzie" tylko jawnie jako komponent
   providers:[
     { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptorInterceptor, multi: true },

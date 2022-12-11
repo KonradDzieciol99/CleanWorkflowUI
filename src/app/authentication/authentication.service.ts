@@ -76,7 +76,8 @@ export class AuthenticationService {
   logout() {
     this.cookieService.delete(environment.COOKIE_REFRESH_TOKEN_NAME);
     this.currentUserSource.next(undefined);
-    this.router.navigateByUrl('../');
+    this.router.navigateByUrl('/auth');
+    this.toastrService.success("logged out successfully")
   }
 
   private test(miliseconds:number):void{

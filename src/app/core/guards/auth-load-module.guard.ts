@@ -8,7 +8,7 @@ import { IUser } from 'src/app/shared/models/IUser';
 @Injectable({
   providedIn: 'root'
 })
-export class AuthModuleGuard implements CanLoad {
+export class AuthLoadModuleGuard implements CanLoad {
 
   constructor(private authenticationService:AuthenticationService,private router:Router, private toastrService: ToastrService) {
 
@@ -28,6 +28,7 @@ export class AuthModuleGuard implements CanLoad {
             }),
             catchError(() =>{
               this.router.navigate(['../auth/login'])
+              this.toastrService.warning('not authorized')
               return of(false);
             })
             )
