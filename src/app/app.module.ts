@@ -25,7 +25,7 @@ import { TestComponent } from './test/test/test.component';
     CoreModule,
     ToastrModule.forRoot({
       positionClass: 'toast-bottom-right',
-      preventDuplicates: true,
+      // preventDuplicates: true,
     
     }),
     NgxSpinnerModule.forRoot({ type: 'ball-clip-rotate-multiple' })

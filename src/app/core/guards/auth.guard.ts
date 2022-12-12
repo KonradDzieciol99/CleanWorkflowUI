@@ -35,7 +35,7 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
           return of(true)
         }
        
-        return this.authenticationService.loadCurrentUser().pipe(
+        return this.authenticationService.refreshCurrentUser().pipe(
           map(()=>{
             return true;
           }),

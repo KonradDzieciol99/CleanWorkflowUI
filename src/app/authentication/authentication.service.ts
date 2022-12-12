@@ -43,30 +43,31 @@ export class AuthenticationService {
       this.logout();
     });
     //
-    let halfTime = new Date(timeNowInMiliseconds + (environment.AUTO_LOGOUT_TIME_IN_MINUTES/2 * 60 * 1000));
+    let reminderTime = new Date(logoutTime.valueOf() - (2 * 60 * 1000));
 
-    timer(halfTime,10000).pipe(takeUntil(this.currentUserSource.pipe(skip(1)))).subscribe(x=>{
+    timer(reminderTime).pipe(takeUntil(this.currentUserSource.pipe(skip(1)))).subscribe(x=>{
 
-      let sekondsToEnds= Math.ceil((logoutTime.valueOf() - new Date().valueOf())/1000);
-      let activeToast = this.toastrService.info(`sesja zakończy się za ${sekondsToEnds} sekund z powodu braku aktywności kliknij aby wydłużyć sesję`,undefined,{});
-
-      let activeToastRenewSub = activeToast.onTap.pipe(takeUntil(activeToast.toastRef.afterClosed())).subscribe(()=>{
+      let sekondsToEnd= Math.ceil((logoutTime.valueOf() - new Date().valueOf())/1000);
+      let activeToast = this.toastrService.info(`sesja zakończy się w mniej niż minutę z powodu braku aktywności kliknij aby wydłużyć sesję`,undefined,{timeOut:(sekondsToEnd*1000)});
+      
+      activeToast.onTap.pipe(takeUntil(activeToast.toastRef.afterClosed())).subscribe(()=>{
         this.toastrService.info("Wydłużam sesję")
+        this.refreshCurrentUser();
       });
+
+      this.currentUser$.pipe(skip(1),take(1)).subscribe(()=>{
+          this.toastrService.clear(activeToast.toastId);
+      })/////////////////////////////////////do przetestowania
+
     });
   }
-
-  tryRefreshTokens(){
-    
-  }
-  loadCurrentUser() {
+  refreshCurrentUser() {
     const cookieExists: boolean = this.cookieService.check(environment.COOKIE_REFRESH_TOKEN_NAME);
     if(cookieExists){
       return this.http.post<IUser>(this.baseUrl + 'account/refresh-token',{}).pipe(
         map((user: IUser) => {
           if (user) {
             this.currentUserSource.next(user);
-            
           }
         })
       )
@@ -99,6 +100,7 @@ export class AuthenticationService {
     this.cookieService.delete(environment.COOKIE_REFRESH_TOKEN_NAME);
     this.currentUserSource.next(undefined);
     this.router.navigateByUrl('/auth');
+    this.toastrService.clear();
     this.toastrService.success("logged out successfully");
     
   }
