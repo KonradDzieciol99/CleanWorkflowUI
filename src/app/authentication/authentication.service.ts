@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, interval, map, Observable, of, pipe, take, takeUntil, tap, throwError, timer } from 'rxjs';
+import { BehaviorSubject, interval, map, Observable, of, pipe, skip, take, takeUntil, tap, throwError, timer } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { IRegisterUser } from '../shared/models/IRegisterUser';
 import { IUser } from '../shared/models/IUser';
@@ -29,11 +29,7 @@ export class AuthenticationService {
   private tokenExpTimer$:Observable<0>|undefined;
 
   constructor(private http: HttpClient, private router: Router,private toastrService:ToastrService,private cookieService: CookieService) {
-    console.log("ghjfgh");
-    this.currentUser$ ?? console.log("lolllllll")
-    interval(1000).pipe(takeUntil(this.currentUser$.pipe(take(1)))).subscribe(x=>{
-      console.log("ghjfgh");
-    })
+
   }
 
   tryRefreshTokens(){
@@ -86,12 +82,15 @@ export class AuthenticationService {
   }
 
   private test(miliseconds:number):void{
-    let seconds = Math.floor(miliseconds/1000) ;
+    let secondsToExpire = Math.floor(miliseconds/1000) ;
     if (!this.tokenExpTimer$) {return;}
-
-    interval(1000).pipe(takeUntil(this.currentUser$)).subscribe(x=>{
-
-      let activeToast = this.toastrService.info(`sesja zakończy się za ${seconds-x} sekund`,undefined,{});
+    let startTime = new Date();
+    interval(10000).pipe(takeUntil(this.currentUserSource.pipe(skip(1)))).subscribe(x=>{
+      
+      var timePassedFromBeginning = Math.floor( (new Date().getTime() - startTime.getTime())/1000);
+      
+      this.toastrService.info(`${timePassedFromBeginning}`,undefined,{});
+      let activeToast = this.toastrService.info(`sesja zakończy się za ${secondsToExpire-timePassedFromBeginning} sekund`,undefined,{});
             
       let activeToastRenewSub = activeToast.onTap.pipe(take(1)).subscribe(()=>{
         this.toastrService.info("przedłużanie")
@@ -99,7 +98,7 @@ export class AuthenticationService {
 
       activeToast.toastRef.afterClosed().pipe(take(1)).subscribe(()=> {
         activeToastRenewSub.unsubscribe();
-        console.log("odsubuje?");
+        this.toastrService.info("unsubbvbb")
       });
 
     });
