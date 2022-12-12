@@ -8,9 +8,8 @@ import { ToastrModule } from 'ngx-toastr';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { CoreModule } from './core/core.module';
 import { NgxSpinnerModule } from 'ngx-spinner';
-import { LoadingInterceptor } from './core/interceptors/loading.interceptor';
-import {CookieService} from 'ngx-cookie-service';
 import { TestComponent } from './test/test/test.component';
+import { CollapseModule } from 'ngx-bootstrap/collapse';
 
 @NgModule({
   declarations: [
@@ -26,9 +25,9 @@ import { TestComponent } from './test/test/test.component';
     ToastrModule.forRoot({
       positionClass: 'toast-bottom-right',
       // preventDuplicates: true,
-    
     }),
-    NgxSpinnerModule.forRoot({ type: 'ball-clip-rotate-multiple' })
+    NgxSpinnerModule.forRoot({ type: 'ball-clip-rotate-multiple' }),
+    CollapseModule.forRoot(),
   ],
   providers: [],
   bootstrap: [AppComponent]

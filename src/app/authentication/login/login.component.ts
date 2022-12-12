@@ -20,7 +20,6 @@ export class LoginComponent implements OnInit {
     email: new FormControl<string>('',[Validators.required, Validators.email,Validators.minLength(6)]),
     password: new FormControl<string>('',[Validators.required,Validators.minLength(6)]),
   });
-
   constructor(private authenticationService:AuthenticationService,
     private toastrService: ToastrService,
     private router: Router,

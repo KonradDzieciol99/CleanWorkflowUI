@@ -9,6 +9,7 @@ import { ErrorHandlingInterceptor } from './interceptors/error-handling.intercep
 import { HeaderComponent } from './header/header.component';
 import { NavBarComponent } from './components/nav-bar/nav-bar.component';
 import { RouterModule } from '@angular/router';
+import { CollapseModule } from 'ngx-bootstrap/collapse';
 
 
 
@@ -19,9 +20,10 @@ import { RouterModule } from '@angular/router';
   ],
   imports: [
     CommonModule,
-    RouterModule
+    RouterModule,
+    CollapseModule.forRoot(),
   ]
-  ,exports: [HeaderComponent],// nie trzeba importować HeaderComponent bo w żadnym elementcie appcomponent nie uzywamy tego w "kodzie" tylko jawnie jako komponent
+  ,exports: [HeaderComponent],
   providers:[
     { provide: HTTP_INTERCEPTORS, useClass: LoadingInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: JwtInterceptorInterceptor, multi: true },

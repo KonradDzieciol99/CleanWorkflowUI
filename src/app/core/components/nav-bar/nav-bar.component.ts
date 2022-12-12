@@ -15,7 +15,7 @@ export class NavBarComponent implements OnInit {
       ,private authenticationService:AuthenticationService) {
 
    }
-
+  isCollapsed = true;
   ngOnInit(): void {
     
   }
