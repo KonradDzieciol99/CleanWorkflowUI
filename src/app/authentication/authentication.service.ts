@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, interval, map, Observable, of, pipe, skip, take, takeUntil, tap, throwError, timer} from 'rxjs';
+import { BehaviorSubject, interval, map, merge, mergeMap, Observable, of, pipe, skip, take, takeUntil, tap, throwError, timer} from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { IRegisterUser } from '../shared/models/IRegisterUser';
 import { IUser } from '../shared/models/IUser';
@@ -50,9 +50,17 @@ export class AuthenticationService {
       let sekondsToEnd= Math.ceil((logoutTime.valueOf() - new Date().valueOf())/1000);
       let activeToast = this.toastrService.info(`sesja zakończy się w mniej niż minutę z powodu braku aktywności kliknij aby wydłużyć sesję`,undefined,{timeOut:(sekondsToEnd*1000)});
       
-      activeToast.onTap.pipe(takeUntil(activeToast.toastRef.afterClosed())).subscribe(()=>{
-        this.toastrService.info("Wydłużam sesję")
-        this.refreshCurrentUser();
+      // activeToast.onTap.pipe(takeUntil(activeToast.toastRef.afterClosed())).subscribe(()=>{
+      //   this.refreshCurrentUser().subscribe(()=>{
+      //     this.toastrService.info("Wydłużam sesję")
+      //   });
+      // });
+
+      activeToast.onTap.pipe(
+        takeUntil(activeToast.toastRef.afterClosed()),
+        mergeMap(()=>this.refreshCurrentUser())
+      ).subscribe(()=>{
+          this.toastrService.info("Wydłużam sesję")
       });
 
       this.currentUser$.pipe(skip(1),take(1)).subscribe(()=>{
@@ -62,21 +70,17 @@ export class AuthenticationService {
     });
   }
   refreshCurrentUser() {
-    const cookieExists: boolean = this.cookieService.check(environment.COOKIE_REFRESH_TOKEN_NAME);
-    if(cookieExists){
-      return this.http.post<IUser>(this.baseUrl + 'account/refresh-token',{}).pipe(
+      return this.http.post<IUser>(this.baseUrl + 'account/refresh-token',{ withCredentials: true }).pipe(
         map((user: IUser) => {
           if (user) {
             this.currentUserSource.next(user);
           }
         })
       )
-    }
-    return throwError(() => new Error(`Empty cookie`));
   }
 
   login(values: any):Observable<void> {
-    return this.http.post<IUser>(this.baseUrl + 'account/login', values,{ withCredentials: true }).pipe(
+    return this.http.post<IUser>(this.baseUrl + 'account/login', values).pipe(
       map((user: IUser) => {
         if (user) {
           this.currentUserSource.next(user);
