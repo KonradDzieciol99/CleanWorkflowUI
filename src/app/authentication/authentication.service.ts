@@ -58,7 +58,7 @@ export class AuthenticationService {
 
       activeToast.onTap.pipe(
         takeUntil(activeToast.toastRef.afterClosed()),
-        mergeMap(()=>this.refreshCurrentUser())
+        mergeMap(()=>this.refreshCurrentUser())///take(1) ???????????????????
       ).subscribe(()=>{
           this.toastrService.info("Wydłużam sesję")
       });
@@ -70,7 +70,7 @@ export class AuthenticationService {
     });
   }
   refreshCurrentUser() {
-      return this.http.post<IUser>(this.baseUrl + 'account/refresh-token',{ withCredentials: true }).pipe(
+      return this.http.post<IUser>(this.baseUrl + 'account/refresh-token',{},{ withCredentials: true }).pipe(
         map((user: IUser) => {
           if (user) {
             this.currentUserSource.next(user);
@@ -80,18 +80,18 @@ export class AuthenticationService {
   }
 
   login(values: any):Observable<void> {
-    return this.http.post<IUser>(this.baseUrl + 'account/login', values).pipe(
+    return this.http.post<IUser>(this.baseUrl + 'account/login', values,{withCredentials: true}).pipe(
       map((user: IUser) => {
         if (user) {
           this.currentUserSource.next(user);
-          this.setAutoLogOutAndReminders(user.token);
+          this.setAutoLogOutAndReminders(user.token);//userlogin event?
         }
       })
     )
   }
 
   register(registerUser: IRegisterUser):Observable<void> {
-    return this.http.post<IUser>(this.baseUrl + 'account/register', registerUser).pipe(
+    return this.http.post<IUser>(this.baseUrl + 'account/register', registerUser ,{withCredentials: true}).pipe(
       map((user: IUser) => {
         if (user) {
           this.currentUserSource.next(user);
@@ -101,7 +101,7 @@ export class AuthenticationService {
   }
 
   logout() {
-    this.cookieService.delete(environment.COOKIE_REFRESH_TOKEN_NAME);
+    this.cookieService.delete(environment.COOKIE_REFRESH_TOKEN_NAME);//revoke request
     this.currentUserSource.next(undefined);
     this.router.navigateByUrl('/auth');
     this.toastrService.clear();

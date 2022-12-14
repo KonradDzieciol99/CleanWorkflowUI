@@ -4,6 +4,7 @@ import { AuthenticationModule } from './authentication/authentication.module';
 import { AuthenticationService } from './authentication/authentication.service';
 import { faCoffee } from '@fortawesome/free-solid-svg-icons';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
+import { take } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -11,12 +12,14 @@ import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent implements OnInit {
+
+  
   faCoffee = faCoffee;
   showHeader = false;
   showSidebar = false;
   showFooter = false;
   title = 'CleanWorkflowUI';
-  constructor(private router: Router,private activatedRoute: ActivatedRoute ) {
+  constructor(private router: Router,private activatedRoute: ActivatedRoute,private authenticationService: AuthenticationService ) {
 
   }
 
@@ -28,9 +31,12 @@ export class AppComponent implements OnInit {
         this.showFooter = this.activatedRoute.firstChild?.snapshot.data['showFooter']!== false ? this.showFooter=true:this.showFooter=false;
       }
     });
+    this.tryloadCurrentUser();
   }
-  loadCurrentUser() {
-    //this.accountService.loadCurrentUser();
+  tryloadCurrentUser() {
+    this.authenticationService.refreshCurrentUser().pipe(take(1)).subscribe(()=>{
+      this.router.navigateByUrl('.../home');
+    });
   }
 }
 
