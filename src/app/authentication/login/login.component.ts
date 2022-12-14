@@ -9,6 +9,8 @@ import { take } from 'rxjs';
 import { ILoginUser } from 'src/app/shared/models/ILoginUser';
 import { IRegisterUser } from 'src/app/shared/models/IRegisterUser';
 import { AuthenticationService } from '../authentication.service';
+import {ActivatedRoute} from '@angular/router';
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
@@ -23,14 +25,17 @@ export class LoginComponent implements OnInit {
   constructor(private authenticationService:AuthenticationService,
     private toastrService: ToastrService,
     private router: Router,
+    private activatedRoute: ActivatedRoute,
     private cookieService: CookieService
     ) 
     {
+      let c= this.activatedRoute.snapshot;
       const cookieExists: boolean = cookieService.check('Test');
       console.log(cookieExists);
      }
 
   ngOnInit(): void {
+    let c= this.activatedRoute.snapshot;
   }
   onSubmit(form: FormGroup) {
     if (this.loginForm.invalid) {

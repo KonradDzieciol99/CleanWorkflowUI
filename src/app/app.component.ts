@@ -5,6 +5,7 @@ import { AuthenticationService } from './authentication/authentication.service';
 import { faCoffee } from '@fortawesome/free-solid-svg-icons';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
 import { take } from 'rxjs';
+import { ToastrService } from 'ngx-toastr';
 
 @Component({
   selector: 'app-root',
@@ -19,8 +20,8 @@ export class AppComponent implements OnInit {
   showSidebar = false;
   showFooter = false;
   title = 'CleanWorkflowUI';
-  constructor(private router: Router,private activatedRoute: ActivatedRoute,private authenticationService: AuthenticationService ) {
-
+  constructor(private toastrService: ToastrService,private router: Router,private activatedRoute: ActivatedRoute,private authenticationService: AuthenticationService ) {
+   let c= this.activatedRoute.snapshot;
   }
 
   ngOnInit(): void {
@@ -35,7 +36,8 @@ export class AppComponent implements OnInit {
   }
   tryloadCurrentUser() {
     this.authenticationService.refreshCurrentUser().pipe(take(1)).subscribe(()=>{
-      this.router.navigateByUrl('.../home');
+      this.toastrService.success("session restored");
+      //this.router.navigateByUrl('.../home');
     });
   }
 }

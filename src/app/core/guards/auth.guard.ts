@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, CanActivateChild, CanLoad, Route, Router, RouterStateSnapshot, UrlSegment, UrlTree } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { catchError, map, mergeMap, Observable, of } from 'rxjs';
+import { catchError, map, mergeMap, Observable, of, skipUntil } from 'rxjs';
 import { AuthenticationService } from 'src/app/authentication/authentication.service';
 
 @Injectable({
@@ -35,28 +35,10 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
         if (auth) {
           return true;
         }
-        this.router.navigate(['../auth/login']);
-        this.toastrService.warning('not authorized');
+        //this.router.navigate(['../auth/login']);
+        // this.toastrService.warning('not authorized');
         return false;
       })
     )
-    // return this.authenticationService.currentUser$.pipe(
-    //   mergeMap(auth=> {
-    //     if (auth) {
-    //       return of(true)
-    //     }
-       
-    //     return this.authenticationService.refreshCurrentUser().pipe(
-    //       map(()=>{
-    //         return true;
-    //       }),
-    //       catchError(() =>{
-    //         this.router.navigate(['../auth/login'])
-    //         this.toastrService.warning('not authorized')
-    //         return of(false);
-    //       })
-    //       )
-    //   })
-    // )
   }
 }
