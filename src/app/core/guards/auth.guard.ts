@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, CanActivateChild, CanLoad, Route, Router, RouterStateSnapshot, UrlSegment, UrlTree } from '@angular/router';
 import { ToastrService } from 'ngx-toastr';
-import { catchError, map, mergeMap, Observable, of, skipUntil } from 'rxjs';
+import { catchError, map, mergeMap, Observable, of, skipUntil, take } from 'rxjs';
 import { AuthenticationService } from 'src/app/authentication/authentication.service';
 
 @Injectable({
@@ -31,14 +31,20 @@ export class AuthGuard implements CanActivate, CanActivateChild, CanLoad {
   private basicAuth(){
 
     return this.authenticationService.currentUser$.pipe(
-      map(auth=> {
-        if (auth) {
-          return true;
-        }
-        //this.router.navigate(['../auth/login']);
-        // this.toastrService.warning('not authorized');
-        return false;
-      })
+      mergeMap(auth=> {
+        if (auth) {return of(true);}
+
+        return this.authenticationService.refreshCurrentUser().pipe(
+          map(()=>{
+            this.toastrService.success("session restored");
+            return true;
+          }),
+          catchError(()=>{
+            this.router.navigate(['../auth/login']);
+            return of(false);
+          })
+        )
+      }),
     )
   }
 }

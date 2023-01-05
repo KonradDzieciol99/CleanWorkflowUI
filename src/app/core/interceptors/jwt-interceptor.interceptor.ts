@@ -5,7 +5,7 @@ import {
   HttpEvent,
   HttpInterceptor
 } from '@angular/common/http';
-import { map, mergeMap, Observable, of } from 'rxjs';
+import { map, mergeMap, Observable, of, take } from 'rxjs';
 import { IUser } from 'src/app/shared/models/IUser';
 import { AuthenticationService } from 'src/app/authentication/authentication.service';
 
@@ -17,6 +17,7 @@ export class JwtInterceptorInterceptor implements HttpInterceptor {
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
 
     return this.authenticationService.currentUser$.pipe(
+      take(1),
       mergeMap(user=>{
 
         if (user) {
@@ -32,3 +33,4 @@ export class JwtInterceptorInterceptor implements HttpInterceptor {
     );
   }
 }
+

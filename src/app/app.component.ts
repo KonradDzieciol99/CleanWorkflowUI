@@ -2,9 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { AuthenticationModule } from './authentication/authentication.module';
 import { AuthenticationService } from './authentication/authentication.service';
-import { faCoffee } from '@fortawesome/free-solid-svg-icons';
+import { faCoffee, IconDefinition } from '@fortawesome/free-solid-svg-icons';
 import { ActivatedRoute, NavigationEnd, Router } from '@angular/router';
-import { take } from 'rxjs';
+import { catchError, take, throwError } from 'rxjs';
 import { ToastrService } from 'ngx-toastr';
 
 @Component({
@@ -15,13 +15,12 @@ import { ToastrService } from 'ngx-toastr';
 export class AppComponent implements OnInit {
 
   
-  faCoffee = faCoffee;
+  faCoffee: IconDefinition = faCoffee;
   showHeader = false;
   showSidebar = false;
   showFooter = false;
   title = 'CleanWorkflowUI';
   constructor(private toastrService: ToastrService,private router: Router,private activatedRoute: ActivatedRoute,private authenticationService: AuthenticationService ) {
-   let c= this.activatedRoute.snapshot;
   }
 
   ngOnInit(): void {
@@ -35,12 +34,24 @@ export class AppComponent implements OnInit {
     this.tryloadCurrentUser();
   }
   tryloadCurrentUser() {
-    this.authenticationService.refreshCurrentUser().pipe(take(1)).subscribe(()=>{
-      this.toastrService.success("session restored");
-      //this.router.navigateByUrl('.../home');
-    });
+    
+    // this.authenticationService.refreshCurrentUser().pipe(take(1)).subscribe(()=>{
+    //   this.toastrService.success("session restored");
+    //   //this.router.navigateByUrl('.../home');
+    // });
+    // this.authenticationService.refreshCurrentUser().pipe(
+    //   take(1)
+    // ).subscribe(()=>{
+    //   this.toastrService.success("session restored");
+    // })
   }
 }
+
+// .subscribe({
+//   next: () => console.log(),
+//   error: (e) => console.error(e),
+//   complete: () => console.info('complete') 
+// });
 
 
 // console.log(window.matchMedia('(prefers-color-scheme: dark)'));

@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, interval, map, merge, mergeMap, Observable, of, pipe, skip, take, takeUntil, tap, throwError, timer} from 'rxjs';
+import { BehaviorSubject, combineLatest, interval, map, merge, mergeMap, Observable, of, pipe, skip, take, takeUntil, tap, throwError, timer} from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { IRegisterUser } from '../shared/models/IRegisterUser';
 import { IUser } from '../shared/models/IUser';
@@ -9,10 +9,10 @@ import { IToken } from '../shared/models/IToken';
 import { ToastrService } from 'ngx-toastr';
 import { CookieService } from 'ngx-cookie-service';
 
-export interface IToastButton {
-  id: string;
-  title: string;
-};
+// export interface IToastButton {
+//   id: string;
+//   title: string;
+// };
 
 @Injectable({
   providedIn: 'root'
@@ -22,6 +22,7 @@ export class AuthenticationService {
 
   
   private baseUrl = environment.apiUrl;
+  private refreshTookenName = environment.COOKIE_REFRESH_TOKEN_NAME;
   private currentUserSource = new BehaviorSubject<IUser|undefined>(undefined);
   currentUser$ = this.currentUserSource.asObservable();
   private expirationTimeout: Date|undefined;
@@ -34,49 +35,83 @@ export class AuthenticationService {
 
   setAutoLogOutAndReminders(token:string){
    
-    //auto log out
     let timeNowInMiliseconds= new Date().valueOf()
     let logoutTime:Date = new Date(timeNowInMiliseconds + (environment.AUTO_LOGOUT_TIME_IN_MINUTES * 60 * 1000));
-
-    timer(logoutTime).pipe(takeUntil(this.currentUserSource.pipe(skip(1)))).subscribe(x=>{
-      this.toastrService.info("sesja się zakończyła")
-      this.logout();
-    });
-    //
     let reminderTime = new Date(logoutTime.valueOf() - (2 * 60 * 1000));
 
-    timer(reminderTime).pipe(takeUntil(this.currentUserSource.pipe(skip(1)))).subscribe(x=>{
+    let logoutTimer$ = timer(logoutTime).pipe(
+      map(()=>{
+       this.toastrService.info("sesja się zakończyła")
+       this.logout();
+      })
+    );
+    let reminderTimer$ = timer(reminderTime).pipe(
+      mergeMap(()=>{
+        let sekondsToEnd= Math.ceil((logoutTime.valueOf() - new Date().valueOf())/1000);
+        let activeToast = this.toastrService.info(`sesja zakończy się w mniej niż minutę z powodu braku aktywności kliknij aby wydłużyć sesję`,undefined,{timeOut:0,extendedTimeOut:0});
 
-      let sekondsToEnd= Math.ceil((logoutTime.valueOf() - new Date().valueOf())/1000);
-      let activeToast = this.toastrService.info(`sesja zakończy się w mniej niż minutę z powodu braku aktywności kliknij aby wydłużyć sesję`,undefined,{timeOut:(sekondsToEnd*1000)});
+        return activeToast.onTap.pipe(
+          mergeMap(()=>{return this.refreshCurrentUser()}),
+          map(()=>{this.toastrService.info("Wydłużam sesję")})
+          )
+      })
+    );
+
+    merge(logoutTimer$,reminderTimer$).pipe(
+      takeUntil(this.currentUserSource.pipe(skip(1)))
+    ).subscribe((value) => {
+      console.log(value);
+    })
+
+
+    // timer(logoutTime).pipe(takeUntil(this.currentUserSource.pipe(skip(1)))).subscribe(x=>{
+
+    // });
+    // //
+    
+
+    // timer(reminderTime).pipe(takeUntil(this.currentUserSource.pipe(skip(1)))).subscribe(x=>{
+
+    //   let sekondsToEnd= Math.ceil((logoutTime.valueOf() - new Date().valueOf())/1000);
+    //   let activeToast = this.toastrService.info(`sesja zakończy się w mniej niż minutę z powodu braku aktywności kliknij aby wydłużyć sesję`,undefined,{timeOut:(sekondsToEnd*1000)});
       
-      // activeToast.onTap.pipe(takeUntil(activeToast.toastRef.afterClosed())).subscribe(()=>{
-      //   this.refreshCurrentUser().subscribe(()=>{
-      //     this.toastrService.info("Wydłużam sesję")
-      //   });
-      // });
+    //   // activeToast.onTap.pipe(takeUntil(activeToast.toastRef.afterClosed())).subscribe(()=>{
+    //   //   this.refreshCurrentUser().subscribe(()=>{
+    //   //     this.toastrService.info("Wydłużam sesję")
+    //   //   });
+    //   // });
 
-      activeToast.onTap.pipe(
-        takeUntil(activeToast.toastRef.afterClosed()),
-        mergeMap(()=>this.refreshCurrentUser())///take(1) ???????????????????
-      ).subscribe(()=>{
-          this.toastrService.info("Wydłużam sesję")
-      });
+    //   activeToast.onTap.pipe(
+    //     takeUntil(activeToast.toastRef.afterClosed()),
+    //     mergeMap(()=>this.refreshCurrentUser())///take(1) ???????????????????
+    //   ).subscribe(()=>{
+    //       this.toastrService.info("Wydłużam sesję")
+    //   });
 
-      this.currentUser$.pipe(skip(1),take(1)).subscribe(()=>{
-          this.toastrService.clear(activeToast.toastId);
-      })/////////////////////////////////////do przetestowania
+    //   // this.currentUser$.pipe(skip(1),take(1)).subscribe(()=>{
+    //   //     this.toastrService.clear(activeToast.toastId);
+    //   // })
+      
+    //   /////////////////////////////////////do przetestowania
 
-    });
+    // });
   }
   refreshCurrentUser() {
-      return this.http.post<IUser>(this.baseUrl + 'account/refresh-token',{},{ withCredentials: true }).pipe(
-        map((user: IUser) => {
-          if (user) {
-            this.currentUserSource.next(user);
-          }
-        })
-      )
+
+    const cookies = this.cookieService.get("isLoginIn");
+
+    if ((!cookies) || cookies!=="true") {
+      return throwError(() => new Error("Empty cookie"));
+    }
+
+    return this.http.post<IUser>(this.baseUrl + 'account/refresh-token',{},{ withCredentials: true }).pipe(
+      map((user?: IUser) => {
+        if (user) {
+          this.currentUserSource.next(user);
+          this.setAutoLogOutAndReminders(user.token);
+        }
+      })
+    )
   }
 
   login(values: any):Observable<void> {
@@ -85,6 +120,7 @@ export class AuthenticationService {
         if (user) {
           this.currentUserSource.next(user);
           this.setAutoLogOutAndReminders(user.token);//userlogin event?
+          this.cookieService.set("isLoginIn","true",100000,undefined,undefined,true,undefined);
         }
       })
     )
@@ -106,7 +142,7 @@ export class AuthenticationService {
     this.router.navigateByUrl('/auth');
     this.toastrService.clear();
     this.toastrService.success("logged out successfully");
-    
+    this.cookieService.delete("isLoginIn");
   }
 
   private test(miliseconds:number,exprationTimeInSeconds:number):void{
@@ -181,3 +217,45 @@ export class AuthenticationService {
 
 
 }
+
+
+// setAutoLogOutAndReminders(token:string){
+   
+//   let timeNowInMiliseconds= new Date().valueOf()
+//   let logoutTime:Date = new Date(timeNowInMiliseconds + (environment.AUTO_LOGOUT_TIME_IN_MINUTES * 60 * 1000));
+
+
+  
+//   timer(logoutTime).pipe(takeUntil(this.currentUserSource.pipe(skip(1)))).subscribe(x=>{
+//     this.toastrService.info("sesja się zakończyła")
+//     this.logout();
+//   });
+//   //
+//   let reminderTime = new Date(logoutTime.valueOf() - (2 * 60 * 1000));
+
+//   timer(reminderTime).pipe(takeUntil(this.currentUserSource.pipe(skip(1)))).subscribe(x=>{
+
+//     let sekondsToEnd= Math.ceil((logoutTime.valueOf() - new Date().valueOf())/1000);
+//     let activeToast = this.toastrService.info(`sesja zakończy się w mniej niż minutę z powodu braku aktywności kliknij aby wydłużyć sesję`,undefined,{timeOut:(sekondsToEnd*1000)});
+    
+//     // activeToast.onTap.pipe(takeUntil(activeToast.toastRef.afterClosed())).subscribe(()=>{
+//     //   this.refreshCurrentUser().subscribe(()=>{
+//     //     this.toastrService.info("Wydłużam sesję")
+//     //   });
+//     // });
+
+//     activeToast.onTap.pipe(
+//       takeUntil(activeToast.toastRef.afterClosed()),
+//       mergeMap(()=>this.refreshCurrentUser())///take(1) ???????????????????
+//     ).subscribe(()=>{
+//         this.toastrService.info("Wydłużam sesję")
+//     });
+
+//     // this.currentUser$.pipe(skip(1),take(1)).subscribe(()=>{
+//     //     this.toastrService.clear(activeToast.toastId);
+//     // })
+    
+//     /////////////////////////////////////do przetestowania
+
+//   });
+// }

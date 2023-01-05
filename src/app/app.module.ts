@@ -24,7 +24,8 @@ import { CollapseModule } from 'ngx-bootstrap/collapse';
     CoreModule,
     ToastrModule.forRoot({
       positionClass: 'toast-bottom-right',
-      // preventDuplicates: true,
+      progressBar:true
+      //preventDuplicates: true,
     }),
     NgxSpinnerModule.forRoot({ type: 'ball-clip-rotate-multiple' }),
     CollapseModule.forRoot(),

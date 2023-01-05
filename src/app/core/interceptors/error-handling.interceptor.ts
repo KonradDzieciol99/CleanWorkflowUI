@@ -18,14 +18,13 @@ export class ErrorHandlingInterceptor implements HttpInterceptor {
   intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
     return next.handle(request).pipe(
       catchError(httpErrorResponse => {
-        console.error(httpErrorResponse);
+        //console.error(httpErrorResponse);
         if (httpErrorResponse instanceof HttpErrorResponse) {
           
           if (httpErrorResponse.status === 400) {
             this.toastrService.error(httpErrorResponse.error?.Message)
           }
           if (httpErrorResponse.status === 401) {
-            //document.cookie
             this.toastrService.error(httpErrorResponse.error?.Message)
           }
           if (httpErrorResponse.status === 404) {
@@ -34,9 +33,11 @@ export class ErrorHandlingInterceptor implements HttpInterceptor {
           if (httpErrorResponse.status === 500) {
             this.toastrService.error(httpErrorResponse.error?.Message);
           }
+          return throwError(() => httpErrorResponse);
         }
-        return throwError(() => new Error(httpErrorResponse));
-        return throwError(httpErrorResponse);
+        throw httpErrorResponse;
+        //return throwError(() => new Error(httpErrorResponse));
+        //return throwError(httpErrorResponse);
       })
     )
   }
